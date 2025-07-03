@@ -108,6 +108,9 @@ public class OnlineOfflineService {
   }
 
   public boolean isUserSubscribed(UUID username, String subscription) {
+    log.info("username: {}", username);
+    log.info("subscription: {}", subscription);
+
     Set<String> subscriptions = userSubscribed.getOrDefault(username, new HashSet<>());
     return subscriptions.contains(subscription);
   }
