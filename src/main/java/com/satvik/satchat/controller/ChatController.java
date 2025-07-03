@@ -1,7 +1,7 @@
 package com.satvik.satchat.controller;
 
 import com.satvik.satchat.model.ChatMessage;
-import com.satvik.satchat.service.ChatService;
+import com.satvik.satchat.service.IChatService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class ChatController {
 
-  private final ChatService chatService;
+  private final IChatService iChatService;
 
   @Autowired
-  public ChatController(ChatService chatService) {
-    this.chatService = chatService;
+  public ChatController(IChatService chatService) {
+    this.iChatService = chatService;
   }
 
   @MessageMapping("/chat/sendMessage/{convId}")
@@ -26,7 +26,7 @@ public class ChatController {
       @Payload ChatMessage chatMessage,
       SimpMessageHeaderAccessor headerAccessor,
       @DestinationVariable("convId") String conversationId) {
-    chatService.sendMessageToConvId(chatMessage, conversationId, headerAccessor);
+    iChatService.sendMessageToConvId(chatMessage, conversationId, headerAccessor);
     return chatMessage;
   }
 }

@@ -1,5 +1,6 @@
-package com.satvik.satchat.service;
+package com.satvik.satchat.service.implement;
 
+import com.satvik.satchat.service.IFilesStorageService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.nio.file.*;
 import java.util.stream.Stream;
 
 @Service
-public class FilesStorageServiceImpl implements FilesStorageService {
+public class FilesStorageServiceImpl implements IFilesStorageService {
 
   private final Path root = Paths.get("uploads");
 

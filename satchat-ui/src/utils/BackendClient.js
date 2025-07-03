@@ -37,6 +37,20 @@ class BackendClient {
     });
   };
 
+  uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await fetch(`${BASE_URL}/upload`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${this.jwt}`
+        // Note: Do not set Content-Type header to let browser set it to multipart/form-data
+      },
+      body: formData,
+    });
+    return await response.json();
+  };
+
   sendRequest = async (url, apiConfigs) => {
     if (!apiConfigs) {
       apiConfigs = { method: "GET" };

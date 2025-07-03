@@ -28,4 +28,10 @@ public class ChatMessage {
   private MessageDeliveryStatusEnum messageDeliveryStatusEnum;
 
   private List<MessageDeliveryStatusUpdate> messageDeliveryStatusUpdates;
+
+  public ChatMessage(UUID receiverId, String content,String receiverUsername) {
+    this.receiverId = receiverId;
+    this.content = content;
+    this.receiverUsername = receiverUsername;
+  }
 }

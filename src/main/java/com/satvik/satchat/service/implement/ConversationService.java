@@ -1,4 +1,4 @@
-package com.satvik.satchat.service;
+package com.satvik.satchat.service.implement;
 
 import static com.satvik.satchat.DbBoiii.getConvId;
 
@@ -14,6 +14,8 @@ import com.satvik.satchat.model.UnseenMessageCountResponse;
 import com.satvik.satchat.model.UserConnection;
 import com.satvik.satchat.repository.ConversationRepository;
 import com.satvik.satchat.repository.UserRepository;
+import com.satvik.satchat.service.IConversationService;
+import com.satvik.satchat.service.IOnlineOfflineService;
 import com.satvik.satchat.utils.SecurityUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,12 +29,12 @@ import org.springframework.util.CollectionUtils;
 
 @Service
 @Slf4j
-public class ConversationService {
+public class ConversationService implements IConversationService {
   private final UserRepository userRepository;
   private final SecurityUtils securityUtils;
   private final ChatMessageMapper chatMessageMapper;
   private final ConversationRepository conversationRepository;
-  private final OnlineOfflineService onlineOfflineService;
+  private final IOnlineOfflineService iOnlineOfflineService;
   private final SimpMessageSendingOperations simpMessageSendingOperations;
 
   public ConversationService(
@@ -40,13 +42,13 @@ public class ConversationService {
       SecurityUtils securityUtils,
       ChatMessageMapper chatMessageMapper,
       ConversationRepository conversationRepository,
-      OnlineOfflineService onlineOfflineService,
+      IOnlineOfflineService iOnlineOfflineService,
       SimpMessageSendingOperations simpMessageSendingOperations) {
     this.userRepository = userRepository;
     this.securityUtils = securityUtils;
     this.chatMessageMapper = chatMessageMapper;
     this.conversationRepository = conversationRepository;
-    this.onlineOfflineService = onlineOfflineService;
+    this.iOnlineOfflineService = iOnlineOfflineService;
     this.simpMessageSendingOperations = simpMessageSendingOperations;
   }
 
@@ -69,7 +71,7 @@ public class ConversationService {
                     .connectionUsername(user.getUsername())
                     .convId(getConvId(user, thisUser))
                     .unSeen(0)
-                    .isOnline(onlineOfflineService.isUserOnline(user.getId()))
+                    .isOnline(iOnlineOfflineService.isUserOnline(user.getId()))
                     .build())
         .toList();
   }
@@ -117,12 +119,12 @@ public class ConversationService {
     return result;
   }
 
-  private void updateMessageDelivery(
+  public void updateMessageDelivery(
       UUID user,
       List<ConversationEntity> entities,
       MessageDeliveryStatusEnum messageDeliveryStatusEnum) {
     entities.forEach(e -> e.setDeliveryStatus(messageDeliveryStatusEnum.toString()));
-    onlineOfflineService.notifySender(user, entities, messageDeliveryStatusEnum);
+    iOnlineOfflineService.notifySender(user, entities, messageDeliveryStatusEnum);
     conversationRepository.saveAll(entities);
   }
 

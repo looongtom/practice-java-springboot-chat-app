@@ -1,7 +1,7 @@
 package com.satvik.satchat.controller;
 
 import com.satvik.satchat.model.UserResponse;
-import com.satvik.satchat.service.OnlineOfflineService;
+import com.satvik.satchat.service.IOnlineOfflineService;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,21 +15,21 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/users")
 public class UserController {
-  private final OnlineOfflineService onlineOfflineService;
+  private final IOnlineOfflineService iOnlineOfflineService;
 
-  public UserController(OnlineOfflineService onlineOfflineService) {
-    this.onlineOfflineService = onlineOfflineService;
+  public UserController(IOnlineOfflineService iOnlineOfflineService) {
+    this.iOnlineOfflineService = iOnlineOfflineService;
   }
 
   @GetMapping("/online")
   @PreAuthorize("hasAuthority('ADMIN')")
   List<UserResponse> getOnlineUsers() {
-    return onlineOfflineService.getOnlineUsers();
+    return iOnlineOfflineService.getOnlineUsers();
   }
 
   @GetMapping("/subscriptions")
   @PreAuthorize("hasAuthority('ADMIN')")
   Map<String, Set<String>> getSubscriptions() {
-    return onlineOfflineService.getUserSubscribed();
+    return iOnlineOfflineService.getUserSubscribed();
   }
 }

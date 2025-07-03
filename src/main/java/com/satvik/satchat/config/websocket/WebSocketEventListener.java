@@ -1,6 +1,6 @@
 package com.satvik.satchat.config.websocket;
 
-import com.satvik.satchat.service.OnlineOfflineService;
+import com.satvik.satchat.service.IOnlineOfflineService;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.extern.slf4j.Slf4j;
@@ -16,18 +16,18 @@ import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
 @Slf4j
 public class WebSocketEventListener {
 
-  private final OnlineOfflineService onlineOfflineService;
+  private final IOnlineOfflineService iOnlineOfflineService;
 
   private final Map<String, String> simpSessionIdToSubscriptionId;
 
-  public WebSocketEventListener(OnlineOfflineService onlineOfflineService) {
-    this.onlineOfflineService = onlineOfflineService;
+  public WebSocketEventListener(IOnlineOfflineService iOnlineOfflineService) {
+    this.iOnlineOfflineService = iOnlineOfflineService;
     this.simpSessionIdToSubscriptionId = new ConcurrentHashMap<>();
   }
 
   @EventListener
   public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-    onlineOfflineService.removeOnlineUser(event.getUser());
+    iOnlineOfflineService.removeOnlineUser(event.getUser());
   }
 
   @EventListener
@@ -42,18 +42,18 @@ public class WebSocketEventListener {
       return;
     }
     simpSessionIdToSubscriptionId.put(simpSessionId, subscribedChannel);
-    onlineOfflineService.addUserSubscribed(sessionSubscribeEvent.getUser(), subscribedChannel);
+    iOnlineOfflineService.addUserSubscribed(sessionSubscribeEvent.getUser(), subscribedChannel);
   }
 
   @EventListener
   public void handleUnSubscribeEvent(SessionUnsubscribeEvent unsubscribeEvent) {
     String simpSessionId = (String) unsubscribeEvent.getMessage().getHeaders().get("simpSessionId");
     String unSubscribedChannel = simpSessionIdToSubscriptionId.get(simpSessionId);
-    onlineOfflineService.removeUserSubscribed(unsubscribeEvent.getUser(), unSubscribedChannel);
+    iOnlineOfflineService.removeUserSubscribed(unsubscribeEvent.getUser(), unSubscribedChannel);
   }
 
   @EventListener
   public void handleConnectedEvent(SessionConnectedEvent sessionConnectedEvent) {
-    onlineOfflineService.addOnlineUser(sessionConnectedEvent.getUser());
+    iOnlineOfflineService.addOnlineUser(sessionConnectedEvent.getUser());
   }
 }

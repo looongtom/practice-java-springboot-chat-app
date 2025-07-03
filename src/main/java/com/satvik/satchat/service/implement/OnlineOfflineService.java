@@ -1,4 +1,4 @@
-package com.satvik.satchat.service;
+package com.satvik.satchat.service.implement;
 
 import com.satvik.satchat.config.UserDetailsImpl;
 import com.satvik.satchat.entity.ConversationEntity;
@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
+
+import com.satvik.satchat.service.IOnlineOfflineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class OnlineOfflineService {
+public class OnlineOfflineService implements IOnlineOfflineService {
   private final Set<UUID> onlineUsers;
   private final Map<UUID, Set<String>> userSubscribed;
   private final UserRepository userRepository;
@@ -76,7 +78,7 @@ public class OnlineOfflineService {
     return onlineUsers.contains(userId);
   }
 
-  private UserDetailsImpl getUserDetails(Principal principal) {
+  public UserDetailsImpl getUserDetails(Principal principal) {
     UsernamePasswordAuthenticationToken user = (UsernamePasswordAuthenticationToken) principal;
     Object object = user.getPrincipal();
     return (UserDetailsImpl) object;

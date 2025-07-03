@@ -51,4 +51,7 @@ public class ConversationEntity {
 
   @Column(name = "delivery_status", length = -1)
   private String deliveryStatus;
+
+  @Column(name = "file_id", length = -1)
+  private String fileId;
 }

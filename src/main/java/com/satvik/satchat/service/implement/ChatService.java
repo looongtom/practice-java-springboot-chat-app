@@ -1,4 +1,4 @@
-package com.satvik.satchat.service;
+package com.satvik.satchat.service.implement;
 
 import com.satvik.satchat.config.UserDetailsImpl;
 import com.satvik.satchat.entity.ConversationEntity;
@@ -6,6 +6,9 @@ import com.satvik.satchat.model.ChatMessage;
 import com.satvik.satchat.model.MessageDeliveryStatusEnum;
 import com.satvik.satchat.repository.ConversationRepository;
 import java.util.UUID;
+
+import com.satvik.satchat.service.IChatService;
+import com.satvik.satchat.service.IOnlineOfflineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -15,22 +18,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class ChatService {
+public class ChatService implements IChatService {
 
   private final SimpMessageSendingOperations simpMessageSendingOperations;
 
   private final ConversationRepository conversationRepository;
 
-  private final OnlineOfflineService onlineOfflineService;
+  private final IOnlineOfflineService iOnlineOfflineService;
 
   @Autowired
   public ChatService(
       SimpMessageSendingOperations simpMessageSendingOperations,
       ConversationRepository conversationRepository,
-      OnlineOfflineService onlineOfflineService) {
+      IOnlineOfflineService iOnlineOfflineService) {
     this.simpMessageSendingOperations = simpMessageSendingOperations;
     this.conversationRepository = conversationRepository;
-    this.onlineOfflineService = onlineOfflineService;
+    this.iOnlineOfflineService = iOnlineOfflineService;
   }
 
   public void sendMessageToConvId(
@@ -39,9 +42,9 @@ public class ChatService {
     UUID fromUserId = userDetails.getId();
     UUID toUserId = chatMessage.getReceiverId();
     populateContext(chatMessage, userDetails);
-    boolean isTargetOnline = onlineOfflineService.isUserOnline(toUserId);
+    boolean isTargetOnline = iOnlineOfflineService.isUserOnline(toUserId);
     boolean isTargetSubscribed =
-        onlineOfflineService.isUserSubscribed(toUserId, "/topic/" + conversationId);
+            iOnlineOfflineService.isUserSubscribed(toUserId, "/topic/" + conversationId);
     chatMessage.setId(UUID.randomUUID());
 
     ConversationEntity.ConversationEntityBuilder conversationEntityBuilder =
@@ -75,7 +78,7 @@ public class ChatService {
     simpMessageSendingOperations.convertAndSend("/topic/" + conversationId, chatMessage);
   }
 
-  private void populateContext(ChatMessage chatMessage, UserDetailsImpl userDetails) {
+  public void populateContext(ChatMessage chatMessage, UserDetailsImpl userDetails) {
     chatMessage.setSenderUsername(userDetails.getUsername());
     chatMessage.setSenderId(userDetails.getId());
   }

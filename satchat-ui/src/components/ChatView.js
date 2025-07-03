@@ -14,6 +14,7 @@ const ChatView = ({ friend, deliveryStatuses }) => {
   const { socketClient: client } = obj;
   const [messages, setMessages] = useState({});
   const [userMessage, setUserMessage] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
 
   if (deliveryStatuses && deliveryStatuses.length > 0) {
     console.dir(deliveryStatuses);
@@ -99,6 +100,26 @@ const ChatView = ({ friend, deliveryStatuses }) => {
     setUserMessage(e.target.value);
   };
 
+  const onFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const onSendFile = async () => {
+    if (!selectedFile) return;
+    try {
+      console.log("sending file...........");
+      const response = await backendClient.uploadFile(selectedFile);
+      console.log("response", response);
+      if (response && response.message) {
+        console.log("response.message", response.message);
+        sendUserMessage(response.message);
+      }
+      setSelectedFile(null);
+    } catch (err) {
+      console.error('File upload failed', err);
+    }
+  };
+
   const sendUserMessage = (message) => {
     client.publish({
       destination: `/app/chat/sendMessage/${convId}`,
@@ -118,19 +139,28 @@ const ChatView = ({ friend, deliveryStatuses }) => {
       {messages[connectionId] &&
         messages[connectionId].length > 0 &&
         messages[connectionId].map((message, idx) => {
+          const isUrl = typeof message.content === 'string' && (message.content.startsWith('http://') || message.content.startsWith('https://'));
           if (message.messageType === "CHAT") {
             if (message.senderId === userId) {
               return (
                 <div key={idx}>
                   you:{" "}
                   <span className="MessageDelivery MessageTag">{`(${message.messageDeliveryStatusEnum.toLowerCase()})`}</span>
-                  {message.content}
+                  {isUrl ? (
+                    <a href={message.content} target="_blank" rel="noopener noreferrer">{message.content}</a>
+                  ) : (
+                    message.content
+                  )}
                 </div>
               );
             } else {
               return (
                 <div key={idx}>
-                  {message.senderUsername}: {message.content}
+                  {message.senderUsername}: {isUrl ? (
+                    <a href={message.content} target="_blank" rel="noopener noreferrer">{message.content}</a>
+                  ) : (
+                    message.content
+                  )}
                 </div>
               );
             }
@@ -139,7 +169,11 @@ const ChatView = ({ friend, deliveryStatuses }) => {
               <div key={idx}>
                 {message.senderUsername}:
                 <span className="NewMessage MessageTag">(new)</span>{" "}
-                {message.content}
+                {isUrl ? (
+                  <a href={message.content} target="_blank" rel="noopener noreferrer">{message.content}</a>
+                ) : (
+                  message.content
+                )}
               </div>
             );
           }
@@ -151,6 +185,11 @@ const ChatView = ({ friend, deliveryStatuses }) => {
         onChange={onInputChange}
         value={userMessage}
       ></TextInput>
+      <input type="file" onChange={onFileChange} />
+      <Button
+        onClick={onSendFile}
+        displayText="Send File"
+      />
       <Button
         onClick={() => sendUserMessage(userMessage)}
         displayText="Send!"
