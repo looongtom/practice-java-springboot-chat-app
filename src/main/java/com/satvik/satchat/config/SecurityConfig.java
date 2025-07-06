@@ -60,7 +60,13 @@ public class SecurityConfig {
             requestMatcher ->
                 requestMatcher
                     .requestMatchers(
-                        "/api/auth/login", "/api/auth/token", "/api/auth/register", "stomp", "/ws","/files/*")
+                        "/api/auth/login",
+                        "/api/auth/token",
+                        "/api/auth/register",
+                        "stomp",
+                        "/ws",
+                        "/files/*",
+                        "/files")
                     .permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()

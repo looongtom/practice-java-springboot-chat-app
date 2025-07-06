@@ -5,10 +5,9 @@ import com.satvik.satchat.entity.ConversationEntity;
 import com.satvik.satchat.model.ChatMessage;
 import com.satvik.satchat.model.MessageDeliveryStatusEnum;
 import com.satvik.satchat.repository.ConversationRepository;
-import java.util.UUID;
-
 import com.satvik.satchat.service.IChatService;
 import com.satvik.satchat.service.IOnlineOfflineService;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -44,7 +43,7 @@ public class ChatService implements IChatService {
     populateContext(chatMessage, userDetails);
     boolean isTargetOnline = iOnlineOfflineService.isUserOnline(toUserId);
     boolean isTargetSubscribed =
-            iOnlineOfflineService.isUserSubscribed(toUserId, "/topic/" + conversationId);
+        iOnlineOfflineService.isUserSubscribed(toUserId, "/topic/" + conversationId);
     chatMessage.setId(UUID.randomUUID());
 
     ConversationEntity.ConversationEntityBuilder conversationEntityBuilder =

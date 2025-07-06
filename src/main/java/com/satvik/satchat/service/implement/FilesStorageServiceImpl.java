@@ -1,16 +1,15 @@
 package com.satvik.satchat.service.implement;
 
 import com.satvik.satchat.service.IFilesStorageService;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.*;
+import java.util.stream.Stream;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.*;
-import java.util.stream.Stream;
 
 @Service
 public class FilesStorageServiceImpl implements IFilesStorageService {
@@ -74,10 +73,11 @@ public class FilesStorageServiceImpl implements IFilesStorageService {
   @Override
   public Stream<Path> loadAll() {
     try {
-      return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
+      return Files.walk(this.root, 1)
+          .filter(path -> !path.equals(this.root))
+          .map(this.root::relativize);
     } catch (IOException e) {
       throw new RuntimeException("Could not load the files!");
     }
   }
-
 }

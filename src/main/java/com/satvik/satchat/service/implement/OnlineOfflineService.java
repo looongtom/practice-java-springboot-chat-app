@@ -10,6 +10,7 @@ import com.satvik.satchat.model.MessageType;
 import com.satvik.satchat.model.UserConnection;
 import com.satvik.satchat.model.UserResponse;
 import com.satvik.satchat.repository.UserRepository;
+import com.satvik.satchat.service.IOnlineOfflineService;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,8 +20,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-
-import com.satvik.satchat.service.IOnlineOfflineService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

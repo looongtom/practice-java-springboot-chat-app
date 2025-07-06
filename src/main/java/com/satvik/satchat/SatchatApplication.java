@@ -10,8 +10,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @EnableJpaAuditing
 public class SatchatApplication implements CommandLineRunner {
-  @Resource
-  IFilesStorageService storageService;
+  @Resource IFilesStorageService storageService;
 
   public static void main(String[] args) {
     SpringApplication.run(SatchatApplication.class, args);
@@ -19,7 +18,7 @@ public class SatchatApplication implements CommandLineRunner {
 
   @Override
   public void run(String... arg) throws Exception {
-//    storageService.deleteAll();
+    //    storageService.deleteAll();
     storageService.init();
   }
 }

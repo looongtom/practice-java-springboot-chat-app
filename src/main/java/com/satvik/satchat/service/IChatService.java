@@ -5,8 +5,10 @@ import com.satvik.satchat.model.ChatMessage;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 
 public interface IChatService {
-    public void sendMessageToConvId(
-            ChatMessage chatMessage, String conversationId, SimpMessageHeaderAccessor headerAccessor);
-    public void populateContext(ChatMessage chatMessage, UserDetailsImpl userDetails);
-    public UserDetailsImpl getUser();
+  public void sendMessageToConvId(
+      ChatMessage chatMessage, String conversationId, SimpMessageHeaderAccessor headerAccessor);
+
+  public void populateContext(ChatMessage chatMessage, UserDetailsImpl userDetails);
+
+  public UserDetailsImpl getUser();
 }
