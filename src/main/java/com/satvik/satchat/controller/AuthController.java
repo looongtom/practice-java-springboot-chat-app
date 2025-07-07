@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+  public static final String ERROR_ROLE_IS_NOT_FOUND = "Error: Role is not found.";
   private final AuthenticationManager authenticationManager;
 
   private final UserRepository userRepository;
@@ -58,7 +59,7 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<?> authenticateUser(
+  public ResponseEntity<JwtResponse> authenticateUser(
       @RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 
     Authentication authentication =
@@ -87,13 +88,13 @@ public class AuthController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<?> registerUser(@RequestBody SignupRequest signUpRequest) {
-    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+  public ResponseEntity<MessageResponse> registerUser(@RequestBody SignupRequest signUpRequest) {
+    if (Boolean.TRUE.equals(userRepository.existsByUsername(signUpRequest.getUsername()))) {
       return ResponseEntity.badRequest()
           .body(new MessageResponse("Error: Username is already taken!"));
     }
 
-    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+    if (Boolean.TRUE.equals(userRepository.existsByEmail(signUpRequest.getEmail()))) {
       return ResponseEntity.badRequest()
           .body(new MessageResponse("Error: Email is already in use!"));
     }
@@ -113,7 +114,7 @@ public class AuthController {
       RoleEntity userRole =
           roleRepository
               .findByName(ERole.USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+              .orElseThrow(() -> new RuntimeException(ERROR_ROLE_IS_NOT_FOUND));
       roles.add(userRole);
     } else {
       strRoles.forEach(
@@ -123,7 +124,7 @@ public class AuthController {
                 RoleEntity adminRole =
                     roleRepository
                         .findByName(ERole.ADMIN)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        .orElseThrow(() -> new RuntimeException(ERROR_ROLE_IS_NOT_FOUND));
                 roles.add(adminRole);
 
                 break;
@@ -131,7 +132,7 @@ public class AuthController {
                 RoleEntity modRole =
                     roleRepository
                         .findByName(ERole.MODERATOR)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        .orElseThrow(() -> new RuntimeException(ERROR_ROLE_IS_NOT_FOUND));
                 roles.add(modRole);
 
                 break;
@@ -139,7 +140,7 @@ public class AuthController {
                 RoleEntity userRole =
                     roleRepository
                         .findByName(ERole.USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        .orElseThrow(() -> new RuntimeException(ERROR_ROLE_IS_NOT_FOUND));
                 roles.add(userRole);
             }
           });

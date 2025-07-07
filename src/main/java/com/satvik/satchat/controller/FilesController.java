@@ -2,11 +2,8 @@ package com.satvik.satchat.controller;
 
 import com.satvik.satchat.entity.FileInfo;
 import com.satvik.satchat.message.ResponseMessage;
-import com.satvik.satchat.service.IChatService;
 import com.satvik.satchat.service.IFilesStorageService;
 import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,11 +15,9 @@ import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBui
 
 @Controller
 public class FilesController {
-  @Autowired IFilesStorageService storageService;
-  private final IChatService iChatService;
-
-  public FilesController(IChatService iChatService) {
-    this.iChatService = iChatService;
+  private final IFilesStorageService storageService;
+  public FilesController(IFilesStorageService storageService) {
+    this.storageService = storageService;
   }
 
   @PostMapping("/upload")
@@ -31,6 +26,10 @@ public class FilesController {
     try {
       String originalFilename = file.getOriginalFilename();
       String extension = "";
+      if (originalFilename == null || originalFilename.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseMessage("File name is empty"));
+      }
       int dotIndex = originalFilename.lastIndexOf('.');
       if (dotIndex > 0) {
         extension = originalFilename.substring(dotIndex);
@@ -74,7 +73,7 @@ public class FilesController {
 
                   return new FileInfo(filename, url);
                 })
-            .collect(Collectors.toList());
+            .toList();
 
     return ResponseEntity.status(HttpStatus.OK).body(fileInfos);
   }
